@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
     }
 
     public onAddHours(hours: number): void {
-        this.date = new Date(this.date.setHours(this.date.getHours() + hours));
+        this.date = new Date(this.date.setTime(this.date.getTime() + (hours * 60 * 60 * 1000)));
     }
 
     public onStartTimer(): void {
