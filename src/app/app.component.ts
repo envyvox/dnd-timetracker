@@ -1,32 +1,43 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-root',
-  template: `
-    <!--The content below is only a placeholder and can be replaced.-->
-    <div style="text-align:center" class="content">
-      <h1>
-        Welcome to {{title}}!
-      </h1>
-      <span style="display: block">{{ title }} app is running!</span>
-      <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-    </div>
-    <h2>Here are some links to help you start: </h2>
-    <ul>
-      <li>
-        <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-      </li>
-      <li>
-        <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-      </li>
-      <li>
-        <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-      </li>
-    </ul>
-    <router-outlet></router-outlet>
-  `,
-  styles: []
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  title = 'app';
+export class AppComponent implements OnInit {
+    public date: Date = new Date();
+    public intervalId: number | undefined;
+
+    @HostListener('window:beforeunload', ['$event'])
+    public beforeunloadHandler() {
+        this.onStopTimer();
+    }
+
+    public ngOnInit(): void {
+        const storedDate = localStorage.getItem('stored-date');
+        if (storedDate !== null) {
+            this.date = new Date(storedDate);
+        }
+    }
+
+    public onAddMinutes(minutes: number): void {
+        this.date = new Date(this.date.setMinutes(this.date.getMinutes() + minutes));
+    }
+
+    public onAddHours(hours: number): void {
+        this.date = new Date(this.date.setHours(this.date.getHours() + hours));
+    }
+
+    public onStartTimer(): void {
+        this.intervalId = setInterval(() => {
+            this.date = new Date(this.date.setSeconds(this.date.getSeconds() + 1));
+        }, 1000);
+    }
+
+    public onStopTimer(): void {
+        clearInterval(this.intervalId);
+        localStorage.setItem('stored-date', this.date.toISOString());
+        this.intervalId = undefined;
+    }
 }
